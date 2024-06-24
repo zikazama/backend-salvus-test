@@ -24,7 +24,7 @@ router.get('/configs/:config_uid', authenticateAdmin, getConfig);
 router.post('/configs', authenticateAdmin, createConfig);
 router.put('/configs/:config_uid', authenticateAdmin, updateConfig);
 router.delete('/configs/:config_uid', authenticateAdmin, deleteConfig);
-router.get('/transactions-with-item/:transaction_uid', authenticateAdmin, getTransactionWithItems);
+router.get('/transactions-with-item', authenticateAdmin, getTransactionWithItems);
 router.post('/overtimes', authenticateAdmin, createOvertime);
 router.get('/overtimes', authenticateAdmin, listOvertimes);
 router.get('/overtimes/:overtime_assigment_uid', authenticateAdmin, getOvertime);
