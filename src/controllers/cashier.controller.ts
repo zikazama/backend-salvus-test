@@ -139,6 +139,7 @@ const createTransactionItem = async (req: Request, res: Response) => {
     const transactionItem = await transactionItemRepository.save({
         ...req.body,
         transaction_item_uid: uuidv4(),
+        transaction_uid: req.params.transaction_uid,
         created_at: new Date(),
         updated_at: new Date(),
     })
@@ -155,7 +156,10 @@ const listTransactionItems = async (req: Request, res: Response) => {
     const [transactionItems, total] = await transactionItemRepository.findAndCount({
         take: limit,
         skip: offset,
-        where: { deleted_at: IsNull() },
+        where: {
+            deleted_at: IsNull(),
+            transaction_uid: req.params.transaction_uid,
+        },
     });
 
     const response = getPagingData([transactionItems, total], Number(page), limit);
@@ -167,7 +171,7 @@ const getTransactionItem = async (req: Request, res: Response) => {
 
     const transactionItemRepository = getRepository(TransactionItem);
     const transactionItem = await transactionItemRepository.findOne({
-        where: { transaction_item_uid: req.params.transaction_item_uid, deleted_at: IsNull() },
+        where: { transaction_item_uid: req.params.transaction_item_uid, transaction_uid: req.params.transaction_uid, deleted_at: IsNull() },
     });
 
     successResponse(res, transactionItem);
@@ -179,6 +183,7 @@ const updateTransactionItem = async (req: Request, res: Response) => {
     const transactionItemRepository = getRepository(TransactionItem);
     const transactionItem = await transactionItemRepository.update({
         transaction_item_uid: req.params.transaction_item_uid,
+        transaction_uid: req.params.transaction_uid,
         deleted_at: IsNull()
     }, {
         ...req.body,
@@ -194,6 +199,7 @@ const deleteTransactionItem = async (req: Request, res: Response) => {
     const transactionItemRepository = getRepository(TransactionItem);
     const transactionItem = await transactionItemRepository.update({
         transaction_item_uid: req.params.transaction_item_uid,
+        transaction_uid: req.params.transaction_uid,
         deleted_at: IsNull()
     }, {
         deleted_at: new Date(),
