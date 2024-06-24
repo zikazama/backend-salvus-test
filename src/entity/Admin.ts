@@ -6,6 +6,9 @@ export class Admin {
   admin_id: number;
 
   @Column()
+  admin_uid: string;
+
+  @Column()
   email: string;
 
   @Column()

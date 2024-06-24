@@ -6,6 +6,9 @@ export class Config {
   config_id: number;
 
   @Column()
+  config_uid: string;
+
+  @Column()
   key: string;
 
   @Column()

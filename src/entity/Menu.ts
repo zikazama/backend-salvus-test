@@ -7,6 +7,9 @@ export class Menu {
     menu_id: number;
 
     @Column()
+    menu_uid: string;
+
+    @Column()
     menu_name: string;
 
     @Column()

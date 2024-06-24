@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, JoinColumn } from 'typeorm';
+import { TransactionItem } from './TransactionItem';
 
 
 @Entity()
@@ -7,10 +8,17 @@ export class Transaction {
     transaction_id: number;
 
     @Column()
+    transaction_uid: string;
+
+    @Column()
     total_transaction: number;
 
     @Column()
-    cashier_id: number;
+    cashier_uid: string;
+
+    @OneToMany(() => TransactionItem, (transactionItem) => transactionItem.transaction_uid)
+    @JoinColumn({ name: 'transaction_uid', referencedColumnName: 'transaction_uid' })
+    public transaction_items: TransactionItem[];
 
     @CreateDateColumn()
     created_at: Date;

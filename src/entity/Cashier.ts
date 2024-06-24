@@ -6,6 +6,9 @@ export class Cashier {
   cashier_id: number;
 
   @Column()
+  cashier_uid: string;
+
+  @Column()
   email: string;
 
   @Column()

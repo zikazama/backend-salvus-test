@@ -6,13 +6,16 @@ export class OvertimeAssignment {
   overtime_assigment_id: number;
 
   @Column()
+  overtime_assigment_uid: string;
+
+  @Column()
   overtime_date: Date;
 
   @Column()
-  kasir_id: number;
+  cashier_uid: string;
 
   @Column()
-  admin_id: number;
+  admin_uid: string;
 
   @Column()
   overtime_hour: number;

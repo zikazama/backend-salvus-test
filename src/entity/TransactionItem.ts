@@ -7,10 +7,13 @@ export class TransactionItem {
     transaction_item_id: number;
 
     @Column()
-    transaction_id: number;
+    transaction_item_uid: string;
 
     @Column()
-    menu_id: number;
+    transaction_uid: string;
+
+    @Column()
+    menu_uid: string;
 
     @Column()
     quantity: number;
