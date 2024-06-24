@@ -6,6 +6,6 @@ define(Admin, (faker: typeof Faker) => {
   const admin = new Admin();
   admin.email = faker.internet.email();
   admin.username = faker.internet.userName();
-  admin.password = faker.internet.password(); // You should hash this password
+  admin.password = faker.internet.password(); 
   return admin;
 });

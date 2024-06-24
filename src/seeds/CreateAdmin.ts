@@ -7,9 +7,9 @@ export default class CreateAdmins implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
     await factory(Admin)()
       .map(async (admin: Admin) => {
-        admin.password = await bcrypt.hash(admin.password, 10); // Hash password
+        admin.password = await bcrypt.hash('123456', 10); // Hash password
         return admin;
       })
-      .createMany(10);
+      .createMany(3);
   }
 }

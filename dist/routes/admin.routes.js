@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+// src/routes/adminRoutes.ts
+var express_1 = require("express");
+var admin_controller_1 = require("../controllers/admin.controller");
+var auth_middleware_1 = require("../middlewares/auth.middleware");
+var router = (0, express_1.Router)();
+router.post('/login/admin', auth_middleware_1.authenticateAdmin, admin_controller_1.adminLogin);
+router.get('/configs', auth_middleware_1.authenticateAdmin, admin_controller_1.listConfigs);
+router.get('/configs/:id', auth_middleware_1.authenticateAdmin, admin_controller_1.getConfig);
+router.post('/configs', auth_middleware_1.authenticateAdmin, admin_controller_1.createConfig);
+router.put('/configs/:id', auth_middleware_1.authenticateAdmin, admin_controller_1.updateConfig);
+router.delete('/configs/:id', auth_middleware_1.authenticateAdmin, admin_controller_1.deleteConfig);
+router.get('/transactions/:id', auth_middleware_1.authenticateAdmin, admin_controller_1.getTransactionWithItems);
+router.post('/overtimes', auth_middleware_1.authenticateAdmin, admin_controller_1.createOvertime);
+router.get('/overtimes', auth_middleware_1.authenticateAdmin, admin_controller_1.listOvertimes);
+router.get('/overtimes/:id', auth_middleware_1.authenticateAdmin, admin_controller_1.getOvertime);
+router.put('/overtimes/:id', auth_middleware_1.authenticateAdmin, admin_controller_1.updateOvertime);
+router.delete('/overtimes/:id', auth_middleware_1.authenticateAdmin, admin_controller_1.deleteOvertime);
+exports.default = router;
