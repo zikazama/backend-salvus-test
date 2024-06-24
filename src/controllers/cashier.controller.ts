@@ -181,7 +181,7 @@ const createTransactionItem = async (req: Request, res: Response) => {
         updated_at: new Date(),
     })
     const transaction = await transactionRepository.findOne({
-        where: req.params.transaction_uid,
+        where: {transaction_uid: req.params.transaction_uid},
     });
     await transactionRepository.update({
         transaction_uid: req.params.transaction_uid,
@@ -247,7 +247,7 @@ const updateTransactionItem = async (req: Request, res: Response) => {
         updated_at: new Date(),
     })
     const transaction = await transactionRepository.findOne({
-        where: req.params.transaction_uid,
+        where: {transaction_uid: req.params.transaction_uid},
     });
     await transactionRepository.update({
         transaction_uid: req.params.transaction_uid,
@@ -279,7 +279,7 @@ const deleteTransactionItem = async (req: Request, res: Response) => {
     })
 
     const transaction = await transactionRepository.findOne({
-        where: req.params.transaction_uid,
+        where: {transaction_uid: req.params.transaction_uid},
     });
     await transactionRepository.update({
         transaction_uid: req.params.transaction_uid,
