@@ -73,11 +73,13 @@ const getMenuDropdown = async (req: Request, res: Response) => {
 
 
 // POST /api/transactions
-const createTransaction = async (req: Request, res: Response) => {
+const createTransaction = async (req: Request | any, res: Response) => {
 
     const transactionRepository = getRepository(Transaction);
     const transaction = await transactionRepository.save({
         ...req.body,
+        total_transaction: 0,
+        cashier_uid: req.user?.cashier_uid,
         status: 'PROGRESS',
         config_uid: uuidv4(),
         created_at: new Date(),
@@ -88,7 +90,7 @@ const createTransaction = async (req: Request, res: Response) => {
 };
 
 // POST /api/transactions/:transaction_uid/submit
-const submitTransaction = async (req: Request, res: Response) => {
+const submitTransaction = async (req: Request | any, res: Response) => {
 
     const transactionRepository = getRepository(Transaction);
     const transaction = await transactionRepository.update({
@@ -96,6 +98,7 @@ const submitTransaction = async (req: Request, res: Response) => {
         deleted_at: IsNull()
     },{
         status: 'DONE',
+        cashier_uid: req.user?.cashier_uid,
         updated_at: new Date(),
     })
 
@@ -130,7 +133,7 @@ const getTransaction = async (req: Request, res: Response) => {
 };
 
 // PUT /api/transactions/:transaction_uid
-const updateTransaction = async (req: Request, res: Response) => {
+const updateTransaction = async (req: Request | any, res: Response) => {
 
     const configRepository = getRepository(Transaction);
     const config = await configRepository.update({
@@ -138,6 +141,7 @@ const updateTransaction = async (req: Request, res: Response) => {
         deleted_at: IsNull()
     }, {
         ...req.body,
+        cashier_uid: req.user?.cashier_uid,
         updated_at: new Date(),
     })
 
@@ -145,12 +149,13 @@ const updateTransaction = async (req: Request, res: Response) => {
 };
 
 // DELETE /api/transactions/:transaction_id
-const deleteTransaction = async (req: Request, res: Response) => {
+const deleteTransaction = async (req: Request | any, res: Response) => {
 
     const configRepository = getRepository(Transaction);
     const config = await configRepository.update({
         transaction_uid: req.params.transaction_uid
     }, {
+        cashier_uid: req.user?.cashier_uid,
         deleted_at: new Date(),
     })
 
