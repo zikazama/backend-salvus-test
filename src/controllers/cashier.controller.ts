@@ -78,12 +78,28 @@ const createTransaction = async (req: Request, res: Response) => {
     const transactionRepository = getRepository(Transaction);
     const transaction = await transactionRepository.save({
         ...req.body,
+        status: 'PROGRESS',
         config_uid: uuidv4(),
         created_at: new Date(),
         updated_at: new Date(),
     })
 
     successResponse(res, transaction, 'Success created data', 201);
+};
+
+// POST /api/transactions/:transaction_uid/submit
+const submitTransaction = async (req: Request, res: Response) => {
+
+    const transactionRepository = getRepository(Transaction);
+    const transaction = await transactionRepository.update({
+        transaction_uid: req.params.transaction_uid,
+        deleted_at: IsNull()
+    },{
+        status: 'DONE',
+        updated_at: new Date(),
+    })
+
+    successResponse(res, transaction, 'Success Submit data', 201);
 };
 
 // GET /api/transactions
@@ -283,5 +299,6 @@ export {
     getTransactionItem,
     updateTransactionItem,
     deleteTransactionItem,
-    getMenuDropdown
+    getMenuDropdown,
+    submitTransaction
 };

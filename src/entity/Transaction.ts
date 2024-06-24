@@ -16,6 +16,9 @@ export class Transaction {
     @Column()
     cashier_uid: string;
 
+    @Column()
+    status: string;
+
     @CreateDateColumn()
     created_at: Date;
 
