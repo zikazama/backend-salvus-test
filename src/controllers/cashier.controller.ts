@@ -81,7 +81,7 @@ const createTransaction = async (req: Request | any, res: Response) => {
         total_transaction: 0,
         cashier_uid: req.user?.cashier_uid,
         status: 'PROGRESS',
-        config_uid: uuidv4(),
+        transaction_uid: uuidv4(),
         created_at: new Date(),
         updated_at: new Date(),
     })
