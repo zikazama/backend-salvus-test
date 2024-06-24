@@ -12,7 +12,8 @@ import {
     listOvertimes,
     getOvertime,
     updateOvertime,
-    deleteOvertime
+    deleteOvertime,
+    getCashierDropdown
 } from '../controllers/admin.controller';
 import { authenticateAdmin } from '../middlewares/auth.middleware';
 
@@ -25,6 +26,7 @@ router.post('/configs', authenticateAdmin, createConfig);
 router.put('/configs/:config_uid', authenticateAdmin, updateConfig);
 router.delete('/configs/:config_uid', authenticateAdmin, deleteConfig);
 router.get('/transactions-with-item', authenticateAdmin, getTransactionWithItems);
+router.get('/cashier/dropdown', authenticateAdmin, getCashierDropdown);
 router.post('/overtimes', authenticateAdmin, createOvertime);
 router.get('/overtimes', authenticateAdmin, listOvertimes);
 router.get('/overtimes/:overtime_assigment_uid', authenticateAdmin, getOvertime);

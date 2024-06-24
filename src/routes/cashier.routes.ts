@@ -12,6 +12,7 @@ import {
     getTransactionItem,
     updateTransactionItem,
     deleteTransactionItem,
+    getMenuDropdown,
 } from '../controllers/cashier.controller';
 import { Router } from 'express';
 import { authenticateCashier } from '../middlewares/auth.middleware';
@@ -20,6 +21,7 @@ const router = Router();
 
 router.post('/login', login);
 router.get('/dashboard', authenticateCashier, dashboard);
+router.get('/menus/dropdown', authenticateCashier, getMenuDropdown);
 router.post('/transactions', authenticateCashier, createTransaction);
 router.get('/transactions', authenticateCashier, listTransactions);
 router.get('/transactions/:transaction_uid', authenticateCashier, getTransaction);

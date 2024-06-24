@@ -12,6 +12,7 @@ import { getPagination, getPagingData } from '../utils/pagination';
 import { successPaginateResponse, successResponse } from '../utils/response';
 import { OvertimeAssignment } from '../entity/OvertimeAssigment';
 import { Transaction } from '../entity/Transaction';
+import { Cashier } from '../entity/Cashier';
 
 // POST /api/login/admin
 const adminLogin = async (req: Request, res: Response) => {
@@ -114,13 +115,24 @@ const getTransactionWithItems = async (req: Request, res: Response) => {
   successPaginateResponse(res, response);
 };
 
+// GET /api/cashier/dropdown
+const getCashierDropdown = async (req: Request, res: Response) => {
+  const cashierRepository = getRepository(Cashier);
+  const cashiers = await cashierRepository.find({
+    where: { deleted_at: IsNull() },
+  });
+
+  successResponse(res, cashiers);
+};
+
 // POST /api/overtimes
-const createOvertime = async (req: Request, res: Response) => {
+const createOvertime = async (req: Request | any, res: Response) => {
 
   const overtimeRepository = getRepository(OvertimeAssignment);
   const overtime = await overtimeRepository.save({
     ...req.body,
     overtime_assigment_uid: uuidv4(),
+    admin_uid: req.user.admin_uid,
     created_at: new Date(),
     updated_at: new Date(),
   })
@@ -156,7 +168,7 @@ const getOvertime = async (req: Request, res: Response) => {
 };
 
 // PUT /api/overtimes/:overtime_assigment_uid
-const updateOvertime = async (req: Request, res: Response) => {
+const updateOvertime = async (req: Request | any, res: Response) => {
 
   const overtimeRepository = getRepository(OvertimeAssignment);
   const overtime = await overtimeRepository.update({
@@ -164,6 +176,7 @@ const updateOvertime = async (req: Request, res: Response) => {
     deleted_at: IsNull()
   }, {
     ...req.body,
+    admin_uid: req.user.admin_uid,
     updated_at: new Date(),
   })
 
@@ -195,5 +208,6 @@ export {
   listOvertimes,
   getOvertime,
   updateOvertime,
-  deleteOvertime
+  deleteOvertime,
+  getCashierDropdown
 };

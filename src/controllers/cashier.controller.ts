@@ -11,6 +11,7 @@ import { Cashier } from "../entity/Cashier";
 import moment from 'moment';
 import { TransactionItem } from "../entity/TransactionItem";
 import { v4 as uuidv4 } from 'uuid';
+import { Menu } from "../entity/Menu";
 
 // POST /api/login
 const login = async (req: Request, res: Response) => {
@@ -62,6 +63,17 @@ const dashboard = async (req: Request, res: Response) => {
         total_menu,
     });
 };
+
+// GET /api/menus/dropdown
+const getMenuDropdown = async (req: Request, res: Response) => {
+    const menuRepository = getRepository(Menu);
+    const menus = await menuRepository.find({
+        where: { deleted_at: IsNull() },
+    });
+
+    successResponse(res, menus);
+};
+
 
 // POST /api/transactions
 const createTransaction = async (req: Request, res: Response) => {
@@ -135,13 +147,28 @@ const deleteTransaction = async (req: Request, res: Response) => {
 // POST /api/transactions/:transaction_uid/transaction-item
 const createTransactionItem = async (req: Request, res: Response) => {
 
+
     const transactionItemRepository = getRepository(TransactionItem);
+    const menuRepository = getRepository(Menu);
+    const transactionRepository = getRepository(Transaction);
+    const menu = await menuRepository.findOne({
+        where: { menu_uid: req.body.menu_uid, deleted_at: IsNull() },
+    });
     const transactionItem = await transactionItemRepository.save({
         ...req.body,
         transaction_item_uid: uuidv4(),
         transaction_uid: req.params.transaction_uid,
+        subtotal: (menu?.price ?? 0) * req.body.quantity,
         created_at: new Date(),
         updated_at: new Date(),
+    })
+    const transaction = await transactionRepository.findOne({
+        where: req.params.transaction_uid,
+    });
+    await transactionRepository.update({
+        transaction_uid: req.params.transaction_uid,
+    }, {
+        total_transaction: (transaction?.total_transaction ?? 0) + (menu?.price ?? 0) * req.body.quantity,
     })
 
     successResponse(res, transactionItem, 'Success created data', 201);
@@ -181,13 +208,33 @@ const getTransactionItem = async (req: Request, res: Response) => {
 const updateTransactionItem = async (req: Request, res: Response) => {
 
     const transactionItemRepository = getRepository(TransactionItem);
+    const menuRepository = getRepository(Menu);
+    const transactionRepository = getRepository(Transaction);
+    const currentTransactionItem = await transactionItemRepository.findOne({
+        where: { transaction_item_uid: req.params.transaction_item_uid, transaction_uid: req.params.transaction_uid, deleted_at: IsNull() },
+    })
+    const currentMenu = await menuRepository.findOne({
+        where: { menu_uid: currentTransactionItem?.menu_uid, deleted_at: IsNull() },
+    });
+    const menu = await menuRepository.findOne({
+        where: { menu_uid: req.body.menu_uid, deleted_at: IsNull() },
+    });
     const transactionItem = await transactionItemRepository.update({
         transaction_item_uid: req.params.transaction_item_uid,
         transaction_uid: req.params.transaction_uid,
         deleted_at: IsNull()
     }, {
         ...req.body,
+        subtotal: (menu?.price ?? 0) * req.body.quantity,
         updated_at: new Date(),
+    })
+    const transaction = await transactionRepository.findOne({
+        where: req.params.transaction_uid,
+    });
+    await transactionRepository.update({
+        transaction_uid: req.params.transaction_uid,
+    }, {
+        total_transaction: (transaction?.total_transaction ?? 0) + (menu?.price ?? 0) * req.body.quantity - (currentMenu?.price ?? 0) * (currentTransactionItem?.quantity ?? 0),
     })
 
     successResponse(res, transactionItem, 'Success updated data', 201);
@@ -197,12 +244,29 @@ const updateTransactionItem = async (req: Request, res: Response) => {
 const deleteTransactionItem = async (req: Request, res: Response) => {
 
     const transactionItemRepository = getRepository(TransactionItem);
+    const transactionRepository = getRepository(Transaction);
+    const menuRepository = getRepository(Menu);
+    const currentTransactionItem = await transactionItemRepository.findOne({
+        where: { transaction_item_uid: req.params.transaction_item_uid, transaction_uid: req.params.transaction_uid, deleted_at: IsNull() },
+    })
+    const currentMenu = await menuRepository.findOne({
+        where: { menu_uid: currentTransactionItem?.menu_uid, deleted_at: IsNull() },
+    });
     const transactionItem = await transactionItemRepository.update({
         transaction_item_uid: req.params.transaction_item_uid,
         transaction_uid: req.params.transaction_uid,
         deleted_at: IsNull()
     }, {
         deleted_at: new Date(),
+    })
+
+    const transaction = await transactionRepository.findOne({
+        where: req.params.transaction_uid,
+    });
+    await transactionRepository.update({
+        transaction_uid: req.params.transaction_uid,
+    }, {
+        total_transaction: (transaction?.total_transaction ?? 0) - (currentMenu?.price ?? 0) * (currentTransactionItem?.quantity ?? 0),
     })
 
     successResponse(res, transactionItem, 'Success deleted data', 204);
@@ -222,4 +286,5 @@ export {
     getTransactionItem,
     updateTransactionItem,
     deleteTransactionItem,
+    getMenuDropdown
 };
