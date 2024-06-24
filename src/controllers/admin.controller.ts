@@ -25,7 +25,7 @@ const adminLogin = async (req: Request, res: Response) => {
   const validPassword = await bcrypt.compare(password, admin.password);
   if (!validPassword) return res.status(401).json({ message: 'Invalid credentials' });
 
-  const token = jwt.sign({ admin_uid: admin.admin_uid, role: 'admin', email: admin.email }, process.env.SECRET_KEY!, { expiresIn: '1h' });
+  const token = jwt.sign({ admin_uid: admin.admin_uid, role: 'admin', email: admin.email }, process.env.SECRET_KEY!, { expiresIn: '23h' });
   successResponse(res, { token });
 };
 

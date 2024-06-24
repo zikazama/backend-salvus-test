@@ -1,4 +1,4 @@
-import { getRepository, IsNull, LessThan, MoreThan } from "typeorm";
+import { getRepository, In, IsNull, LessThan, MoreThan } from "typeorm";
 import { Admin } from "../entity/Admin";
 import { successPaginateResponse, successResponse } from "../utils/response";
 import { Request, Response } from 'express';
@@ -24,7 +24,7 @@ const login = async (req: Request, res: Response) => {
     const validPassword = await bcrypt.compare(password, cashier.password);
     if (!validPassword) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ cashier_uid: cashier.cashier_uid, role: 'cashier', email: cashier.email }, process.env.SECRET_KEY!, { expiresIn: '1h' });
+    const token = jwt.sign({ cashier_uid: cashier.cashier_uid, role: 'cashier', email: cashier.email }, process.env.SECRET_KEY!, { expiresIn: '23h' });
     successResponse(res, { token });
 };
 
@@ -35,20 +35,17 @@ const dashboard = async (req: Request, res: Response) => {
     const transactionRepository = getRepository(Transaction);
     const transactionItemRepository = getRepository(TransactionItem);
     const overtimes = await overtimeRepository.createQueryBuilder('o')
-        .andWhere('DATE(o.createdAt) = CURDATE()')
-        .andWhere({
-            deleted_at: IsNull()
-        })
+        .where('DATE(o.created_at) = CURDATE() AND o.deleted_at IS NULL')
         .getMany();
     const transactions = await transactionRepository.createQueryBuilder('t')
-        .andWhere('DATE(t.createdAt) = CURDATE()')
-        .andWhere({
+        .where('DATE(t.created_at) = CURDATE() AND t.deleted_at IS NULL')
+        .getMany();
+    const transaction_uids = transactions.map(t => t.transaction_uid);
+    const transaction_items = await transactionItemRepository.createQueryBuilder('ti')
+        .where({
+            transaction_uid: In(transaction_uids),
             deleted_at: IsNull()
         })
-        .getMany();
-    const transaction_ids = transactions.map(t => t.transaction_id);
-    const transaction_items = await transactionItemRepository.createQueryBuilder('ti')
-        .where('ti.transaction_id IN (:...transaction_ids)', { transaction_ids })
         .getMany();
 
     const total_overtime = overtimes.reduce((acc, o) => acc + o.overtime_hour, 0);
