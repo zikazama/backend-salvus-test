@@ -1,6 +1,6 @@
 // src/controllers/adminController.ts
 import { Request, Response } from 'express';
-import { IsNull, Transaction, getRepository } from 'typeorm';
+import { IsNull, getRepository } from 'typeorm';
 import { Admin } from '../entity/Admin';
 import { Config } from '../entity/Config';
 import bcrypt from 'bcrypt';
@@ -11,6 +11,7 @@ dotenv.config();
 import { getPagination, getPagingData } from '../utils/pagination';
 import { successPaginateResponse, successResponse } from '../utils/response';
 import { OvertimeAssignment } from '../entity/OvertimeAssigment';
+import { Transaction } from '../entity/Transaction';
 
 // POST /api/login/admin
 const adminLogin = async (req: Request, res: Response) => {
@@ -98,14 +99,19 @@ const deleteConfig = async (req: Request, res: Response) => {
 
 // GET /api/transactions-with-items
 const getTransactionWithItems = async (req: Request, res: Response) => {
+  const { page, size } = req.query;
+  const { limit, offset } = getPagination(Number(page), Number(size));
 
   const transactionRepository = getRepository(Transaction);
-  const config = await transactionRepository.findOne({
+  const [transactions, total] = await transactionRepository.findAndCount({
+    take: limit,
+    skip: offset,
     where: { deleted_at: IsNull() },
     relations: ['transaction_items']
   });
 
-  successResponse(res, config);
+  const response = getPagingData([transactions, total], Number(page), limit);
+  successPaginateResponse(res, response);
 };
 
 // POST /api/overtimes
