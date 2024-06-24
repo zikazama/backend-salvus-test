@@ -1,6 +1,8 @@
 // src/controllers/adminController.ts
 import { Request, Response } from 'express';
-import { Admin, Config, OvertimeAssignment, Transaksi, TransaksiItem } from '../models';
+import { IsNull, getRepository } from 'typeorm';
+import { Admin } from '../entity/Admin';
+import { Config } from '../entity/Config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -9,17 +11,23 @@ import { getPagination, getPagingData } from '../utils/pagination';
 
 const getConfigs = async (req: Request, res: Response) => {
   const { page, size } = req.query;
-  const { limit, offset } = getPagination(page as any, size as any);
+  const { limit, offset } = getPagination(Number(page), Number(size));
 
-  const data = await Config.findAndCountAll({ limit, offset });
-  const response = getPagingData(data, page as any, limit);
+  const configRepository = getRepository(Config);
+  const [configs, total] = await configRepository.findAndCount({
+    take: limit,
+    skip: offset,
+    where: { deleted_at: IsNull() }, // Optional: If you want to exclude soft-deleted records
+  });
 
+  const response = getPagingData([configs, total], Number(page), limit);
   res.json(response);
 };
 
 const adminLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const admin: any = await Admin.findOne({ where: { email } });
+  const adminRepository = getRepository(Admin);
+  const admin = await adminRepository.findOne({ where: { email } });
 
   if (!admin) return res.status(401).json({ message: 'Invalid credentials' });
 
