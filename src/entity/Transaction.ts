@@ -16,10 +16,6 @@ export class Transaction {
     @Column()
     cashier_uid: string;
 
-    @OneToMany(() => TransactionItem, (transactionItem) => transactionItem.transaction_uid)
-    @JoinColumn({ name: 'transaction_uid', referencedColumnName: 'transaction_uid' })
-    public transaction_items: TransactionItem[];
-
     @CreateDateColumn()
     created_at: Date;
 

@@ -104,12 +104,13 @@ const getTransactionWithItems = async (req: Request, res: Response) => {
   const { limit, offset } = getPagination(Number(page), Number(size));
 
   const transactionRepository = getRepository(Transaction);
-  const [transactions, total] = await transactionRepository.findAndCount({
-    take: limit,
-    skip: offset,
-    where: { deleted_at: IsNull() },
-    relations: ['transaction_items']
-  });
+  const [transactions, total] = await transactionRepository.createQueryBuilder('t')
+    .leftJoin('transaction_item', 'transaction_uid')
+    .limit(limit)
+    .take(offset)
+    .where({
+      deleted_at: IsNull()
+    }).getManyAndCount();
 
   const response = getPagingData([transactions, total], Number(page), limit);
   successPaginateResponse(res, response);
