@@ -9,5 +9,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use('/api', adminRoutes);
 app.use('/api', cashierRoutes);
+app.use('/', (req, res) => {
+    res.send('Hello, World Salvus BE Test!');
+});
 
 export default app;
