@@ -18,7 +18,7 @@ import { authenticateCashier } from '../middlewares/auth.middleware';
 
 const router = Router();
 
-router.post('/login', authenticateCashier, login);
+router.post('/login', login);
 router.get('/dashboard', authenticateCashier, dashboard);
 router.post('/transactions', authenticateCashier, createTransaction);
 router.get('/transactions', authenticateCashier, listTransactions);

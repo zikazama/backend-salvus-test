@@ -18,7 +18,7 @@ import { authenticateAdmin } from '../middlewares/auth.middleware';
 
 const router = Router();
 
-router.post('/login/admin', authenticateAdmin, adminLogin);
+router.post('/login/admin', adminLogin);
 router.get('/configs', authenticateAdmin, listConfigs);
 router.get('/configs/:id', authenticateAdmin, getConfig);
 router.post('/configs', authenticateAdmin, createConfig);
