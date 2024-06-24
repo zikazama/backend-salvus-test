@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
 
 @Entity()
-export class Kasir {
+export class Cashier {
   @PrimaryGeneratedColumn()
-  kasir_id: number;
+  cashier_id: number;
 
   @Column()
   email: string;
