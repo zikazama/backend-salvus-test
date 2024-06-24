@@ -7,5 +7,6 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use('/api', adminRoutes);
+// app.use('/api', cashierRoutes);
 
 export default app;
